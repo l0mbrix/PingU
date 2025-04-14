@@ -26,13 +26,13 @@ PING_ANSWERS = [
 
 @client.event
 async def on_message(message):
+    print("Pong")
     # Check if the message is from a bot
     if message.author.bot:
         return
 
     # Check if the message is a ping
     if message.content.startswith("!ping"):
-        print ("Pong")
         # Send a random answer from the list
         await message.channel.send(random.choice(PING_ANSWERS))
 
