@@ -1,4 +1,4 @@
-# Importations #
+# Importations
 from dotenv import load_dotenv
 import os
 import discord
@@ -6,9 +6,13 @@ import random
 
 # Loadings
 load_dotenv()
-Token = os.getenv("DISCORD_TOKEN")
+TOKEN = os.getenv("TOKEN")
 
 # Intents Discord to be defined
+intents = discord.Intents.default()
+
+# Creating a client intent
+client = discord.Client(intents=intents)
 
 # Funny answers #
 PING_ANSWERS = [
@@ -19,6 +23,7 @@ PING_ANSWERS = [
     "Answer 5",
 ]
 
+
 @client.event
 async def on_message(message):
     # Check if the message is from a bot
@@ -27,8 +32,9 @@ async def on_message(message):
 
     # Check if the message is a ping
     if message.content.startswith("!ping"):
+        print ("Pong")
         # Send a random answer from the list
         await message.channel.send(random.choice(PING_ANSWERS))
 
-# Insert the Discord bot token here (careful: don't share it on GitHub)
+# Discord token
 client.run(TOKEN)
