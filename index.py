@@ -10,6 +10,7 @@ TOKEN = os.getenv("TOKEN")
 
 # Intents Discord to be defined
 intents = discord.Intents.default()
+intents.message_content = True
 
 # Creating a client intent
 client = discord.Client(intents=intents)
