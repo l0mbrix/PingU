@@ -1,0 +1,56 @@
+# To-do List
+
+Un bot Discord farfelu qui gère les inscriptions aux jeux avec humour et style !
+
+---
+
+## ✅ Fonctionnalités terminées
+
+- [x] Création de la base de données SQLite (`registrations.db`)
+- [x] Table `registrations` avec colonnes `user_id` et `game`
+- [x] Commandes `/valo`, `/nains`, `/démocratie`, `/aoe` qui :
+  - [x] Cherchent les utilisateurs inscrits à un jeu
+  - [x] Pingent les joueurs inscrits
+  - [x] Ajoutent un message drôle différent selon le jeu
+  - [x] Gèrent le cas où personne n’est inscrit
+
+---
+
+## 🔜 Prochaines étapes
+
+### 🧾 Commande `/liste` personnalisée
+- [ ] Permet à un utilisateur de voir les jeux auxquels **il/elle est inscrit(e)**
+- [ ] Affiche un message sympa + la liste des jeux
+- [ ] Ajoute un lien vers le message d’inscription (emoji)
+
+### 🎭 Gestion des réactions (inscription par emoji)
+- [ ] Créer un message "central" d'inscription avec réactions (ex: 🎯 pour Valorant, 🏔 pour Moria…)
+- [ ] Ajouter `on_raw_reaction_add` pour inscrire un utilisateur en base
+- [ ] Ajouter `on_raw_reaction_remove` pour désinscrire un utilisateur
+- [ ] Lier chaque emoji à un nom de jeu (mapping clair)
+
+### 🔒 Sécurisation & confort
+- [ ] Restreindre certaines commandes à un rôle spécifique (ex: `@Admin`)
+- [ ] Ajouter des `cooldowns` pour éviter le spam
+- [ ] Ajout de logs pour le suivi des inscriptions/désinscriptions
+
+### 🎨 Fun et personnalisation
+- [ ] Réponses différentes selon l'heure de la journée
+- [ ] Intégration d’images ou gifs (optionnel)
+- [ ] Bonus humoristique si un utilisateur est inscrit à plusieurs jeux
+- [ ] Commande `/stats` pour afficher :
+  - [ ] Le nombre d’inscrits par jeu
+  - [ ] Le jeu le plus populaire
+
+---
+
+## ✨ Bonus futurs (idées en vrac)
+- [ ] Commande `/reset` pour purger les inscriptions (admin only)
+- [ ] Intégration web pour voir les stats ou la liste des jeux
+- [ ] Notifications automatiques (ex : "Il y a 4 inscrits pour Valorant ce soir !")
+
+---
+
+## 📌 Remarques
+- Le code est écrit pour être **simple, lisible et pédagogique**.
+- Le projet est conçu pour **apprendre Python + Discord API pas à pas** 💡

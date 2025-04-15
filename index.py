@@ -12,15 +12,66 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN")
 
 # Database creation
+conn = sqlite3.connect("registrations.db") # Create/open a database file
+cursor = conn.cursor() # 'Pen' allowing to write in the database -> execute and fetch
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS registrations (
+        user_id INTEGER, 
+        game TEXT)
+""") # Creating a table if none
+conn.commit() # Saving changes
 
-# Intents Discord to be defined
+# Add or check user in 'registrations' db
+def add_user_to_db(user_id, game):
+    cursor.execute("SELECT * FROM registrations WHERE user_id = ? AND game = ?", (user_id, game)) # Check both parameters before doing anything
+    result = cursor.fetchone() # Fetch first line found or none if nothing found
+    if result is None:
+        cursor.execute("INSERT INTO registrations (user_id, game) VALUES (?, ?)", (user_id, game))
+        conn.commit()
+    else:
+        print(f"User {user_id} is already registered in the database for {game}.")
+
+# Remove user in 'registrations' db
+def remove_user_from_db(user_id, game):
+    cursor.execute("DELETE FROM registrations WHERE user_id = ? AND game = ?", (user_id, game))
+    conn.commit()
+    print(f"User {user_id} has been removed from the database for {game}.")
+
+# Discord intents
 intents = discord.Intents.default()
+intents.reactions = True # To get reactions
+intents.members = True # To get members
+intents.message_content = True # To get message content
 
-# Creating a bot listening to !
+# Giving the bot what to "hear"
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Funny answers #
-VALO_ANSWERS = [
+valo_answers = [
+    "Answer 1",
+    "Answer 2",
+    "Answer 3",
+    "Answer 4",
+    "Answer 5",
+]
+
+moria_answers = [
+    "Answer 1",
+    "Answer 2",
+    "Answer 3",
+    "Answer 4",
+    "Answer 5",
+]
+
+hd2_answers = [
+    "Answer 1",
+    "Answer 2",
+    "Answer 3",
+    "Answer 4",
+    "Answer 5",
+]
+
+aoe_answers = [
     "Answer 1",
     "Answer 2",
     "Answer 3",
@@ -29,32 +80,149 @@ VALO_ANSWERS = [
 ]
 
 @bot.event
+# Initial check for reaction
+async def on_ready():
+    await bot.tree.sync()
+    print(f"{bot.user} is ready !")
+
+    channel = bot.get_channel(1260591984985378940)
+    message = await channel.fetch_message(1361274589992194128)
+
+    for reaction in message.reactions:
+        users = await reaction.users().flatten() # Flatten() to fetch user reactions
+        for user in users:
+            if user.bot:
+                continue
+
+            emoji = str(reaction.emoji)
+
+            if emoji == "🔫":
+                add_user_to_db(user.id, "Valorant")
+            elif emoji == "🏔":
+                add_user_to_db(user.id, "Moria")
+            elif emoji == "🫡":
+                add_user_to_db(user.id, "Helldivers 2")
+            elif emoji =="⚔️":
+                add_user_to_db(user.id, "AoE")
+
 # Check reactions
 async def on_reaction_add(reaction, user):
     if user.bot:
         return
 
     if reaction.message.id == 1361274589992194128:
-        if str(reaction.emoji.valorant) == "🔫":
-            print(f"{user.name} reacted with {reaction.emoji.valorant} at {reaction.message.id}") # Console check
+        emoji = str(reaction.emoji)
+
+        if emoji == "🔫":
+            print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
             add_user_to_db(user.id, "Valorant")
 
-        if str(reaction.emoji.moria) == "🏔":
-            print(f"{user.name} reacted with {reaction.emoji.moria} at {reaction.message.id}") # Console check
+        elif emoji == "🏔":
+            print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
             add_user_to_db(user.id, "Moria")
 
-        if str(reaction.emoji.helldivers2) == "🫡":
-            print(f"{user.name} reacted with {reaction.emoji.helldivers2} at {reaction.message.id}") # Console check
-            add_user_to_db(user.id, "Helldivers2")
+        elif emoji == "🫡":
+            print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
+            add_user_to_db(user.id, "Helldivers 2")
 
-        if str(reaction.emoji.aoe) == "⚔️":
-            print(f"{user.name} reacted with {reaction.emoji.aoe} at {reaction.message.id}") # Console check
+        elif emoji == "⚔️":
+            print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
             add_user_to_db(user.id, "AoE")
 
-# Check !ping
-@bot.tree.command(name="valo", description="Someone wants to play Valorant in your server.")
+# On reaction remove
+async def on_reaction_remove(reaction, user):
+    if user.bot:
+        return
+
+    if reaction.message.id == 1361274589992194128:
+        emoji = str(reaction.emoji)
+
+        if emoji == "🔫":
+            remove_user_from_db(user.id, "Valorant")
+
+        elif emoji == "🏔":
+            remove_user_from_db(user.id, "Moria")
+
+        elif emoji == "🫡":
+            remove_user_from_db(user.id, "Helldivers 2")
+
+        elif emoji == "⚔️":
+            remove_user_from_db(user.id, "AoE")
+
+@bot.tree.command(name="valo", description="Ping les joueurs de Valorant 🔫")
 async def valo(interaction: discord.Interaction):
-    await interaction.response.send_message(random.choice(VALO_ANSWERS))
+
+    cursor.execute("SELECT user_id FROM registrations WHERE game = ?", ("Valorant",))
+    user_ids = cursor.fetchall()
+
+    mentions = []
+    for row in user_ids:
+        user_id = row[0]
+        user = await bot.fetch_user(user_id)
+        mentions.append(user.mention)
+
+    if mentions:
+        message = random.choice(valo_answers) + "\n" + " ".join(mentions)
+    else:
+        message = "Oups ! Aucun camarade encore inscrit pour rejoindre l'escouade. Il va falloi 'piou piou' solo. 🔫"
+    await interaction.response.send_message(message)
+
+@bot.tree.command(name="nains", description="Ping les joueurs de Return To The Moria 🏔")
+async def nains(interaction: discord.Interaction):
+
+    cursor.execute("SELECT user_id FROM registrations WHERE game = ?", ("Moria",))
+    user_ids = cursor.fetchall()
+
+    mentions = []
+    for row in user_ids:
+        user_id = row[0]
+        user = await bot.fetch_user(user_id)
+        mentions.append(user.mention)
+
+    if mentions:
+        message = random.choice(moria_answers) + "\n" + " ".join(mentions)
+    else:
+        message = "Pas de nain autre que toi dans la liste... Courage, la Moria a besoin de toi ! 🏔"
+    await interaction.response.send_message(message)
+
+@bot.tree.command(name="démocratie", description="Ping les joueurs de Helldivers 2 🫡")
+async def democratie(interaction: discord.Interaction):
+
+    cursor.execute("SELECT user_id FROM registrations WHERE game = ?", ("Helldivers 2",))
+    user_ids = cursor.fetchall()
+
+    mentions = []
+    for row in user_ids:
+        user_id = row[0]
+        user = await bot.fetch_user(user_id)
+        mentions.append(user.mention)
+
+    if mentions:
+        message = random.choice(hd2_answers) + "\n" + " ".join(mentions)
+    else:
+        message = "Aucun soldat n'est encore inscrit ! La démocratie ne peut compter que sur toi. 🫡"
+    await interaction.response.send_message(message)
+
+@bot.tree.command(name="aoe", description="Ping les joueurs d'Age of Empires ⚔️")
+async def aoe(interaction: discord.Interaction):
+
+    cursor.execute("SELECT user_id FROM registrations WHERE game = ?", ("AoE",))
+    user_ids = cursor.fetchall()
+
+    mentions = []
+    for row in user_ids:
+        user_id = row[0]
+        user = await bot.fetch_user(user_id)
+        mentions.append(user.mention)
+
+    if mentions:
+        message = random.choice(aoe_answers) + "\n" + " ".join(mentions)
+    else:
+        message = "Il n'y a pas encore d'inscrit sur la liste d'Age of Empires. Déso Seb, il va falloir jouer solo. ⚔️"
+    await interaction.response.send_message(message)
+
+#async def valo(interaction: discord.Interaction):
+    #await interaction.response.send_message(random.choice(VALO_ANSWERS))
 
 # @bot.event
 # async def on_message(message):
@@ -62,6 +230,7 @@ async def valo(interaction: discord.Interaction):
     # Check if the message is from a bot
     # if message.author.bot:
         # return
+@bot.fetch_user(user_id)
 
 @bot.event
 async def on_ready():
