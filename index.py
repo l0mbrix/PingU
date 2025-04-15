@@ -221,9 +221,6 @@ async def aoe(interaction: discord.Interaction):
         message = "Il n'y a pas encore d'inscrit sur la liste d'Age of Empires. Déso Seb, il va falloir jouer solo. ⚔️"
     await interaction.response.send_message(message)
 
-#async def valo(interaction: discord.Interaction):
-    #await interaction.response.send_message(random.choice(VALO_ANSWERS))
-
 # @bot.event
 # async def on_message(message):
     # print("Pong !")

@@ -38,9 +38,6 @@ Un bot Discord farfelu qui gère les inscriptions aux jeux avec humour et style 
 - [ ] Réponses différentes selon l'heure de la journée
 - [ ] Intégration d’images ou gifs (optionnel)
 - [ ] Bonus humoristique si un utilisateur est inscrit à plusieurs jeux
-- [ ] Commande `/stats` pour afficher :
-  - [ ] Le nombre d’inscrits par jeu
-  - [ ] Le jeu le plus populaire
 
 ---
 
