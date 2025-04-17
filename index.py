@@ -106,6 +106,7 @@ async def on_ready():
                 add_user_to_db(user.id, "AoE")
 
 # Check reactions
+@bot.event
 async def on_reaction_add(reaction, user):
     if user.bot:
         return
@@ -130,6 +131,7 @@ async def on_reaction_add(reaction, user):
             add_user_to_db(user.id, "AoE")
 
 # On reaction remove
+@bot.event
 async def on_reaction_remove(reaction, user):
     if user.bot:
         return
@@ -164,7 +166,7 @@ async def valo(interaction: discord.Interaction):
     if mentions:
         message = random.choice(valo_answers) + "\n" + " ".join(mentions)
     else:
-        message = "Oups ! Aucun camarade encore inscrit pour rejoindre l'escouade. Il va falloi 'piou piou' solo. 🔫"
+        message = "Oups ! Aucun autre agent disponible pour désamorcer le spike... Il va falloir 'piou piou' solo. 🔫"
     await interaction.response.send_message(message)
 
 @bot.tree.command(name="nains", description="Ping les joueurs de Return To The Moria 🏔")
@@ -221,18 +223,23 @@ async def aoe(interaction: discord.Interaction):
         message = "Il n'y a pas encore d'inscrit sur la liste d'Age of Empires. Déso Seb, il va falloir jouer solo. ⚔️"
     await interaction.response.send_message(message)
 
+@bot.tree.command(name="liste", description="Liste des jeux auxquels un utilisateur est inscrit")
+async def liste(interaction: discord.Interaction):
+    cursor.execute("SELECT game FROM registrations WHERE user_id = ?", (interaction.user.id,))
+    game = cursor.fetchall()
+    game_names = [g[0] for g in game] # Fetch all game names for the user
+    if game_names:
+        message = (f"Voici les jeux auxquels tu es inscrit :" + "\n" + " ".join(game_names))
+    else:
+        message = "Tu n'es inscrit à aucun jeu. Pour le faire, rends-toi sur [ce message](https://discord.com/channels/1260548119926542417/1260591984985378940/1361274589992194128) et clique sur l'emoji correspondant au jeu auquel tu veux participer !"
+    await interaction.response.send_message(message)
+
 # @bot.event
 # async def on_message(message):
     # print("Pong !")
     # Check if the message is from a bot
     # if message.author.bot:
         # return
-@bot.fetch_user(user_id)
 
-@bot.event
-async def on_ready():
-    await bot.tree.sync()
-    print(f"{bot.user} is ready !")
 
-# Discord token
 bot.run(TOKEN)
