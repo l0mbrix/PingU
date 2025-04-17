@@ -89,10 +89,15 @@ async def on_ready():
     message = await channel.fetch_message(1361274589992194128)
 
     for reaction in message.reactions:
-        users = await reaction.users().flatten() # Flatten() to fetch user reactions
-        for user in users:
+        async for user in reaction.users():
             if user.bot:
                 continue
+
+            # Check if the user is already in the database
+            # cursor.execute("SELECT * FROM registrations WHERE user_id = ? AND game = ?", (user.id, "Valorant"))
+            # result = cursor.fetchone()
+            # if result is None:
+                # add_user_to_db(user.id, "Valorant")
 
             emoji = str(reaction.emoji)
 
