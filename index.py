@@ -232,6 +232,9 @@ async def aoe(interaction: discord.Interaction):
 async def liste(interaction: discord.Interaction):
     cursor.execute("SELECT game FROM registrations WHERE user_id = ?", (interaction.user.id,))
     game = cursor.fetchall()
+
+    print(f"Games extracter for {interaction.user.name} : {game}")
+
     game_names = [g[0] for g in game] # Fetch all game names for the user
     if game_names:
         message = (f"Voici les jeux auxquels tu es inscrit :" + "\n" + "   ".join(game_names))
