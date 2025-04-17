@@ -103,7 +103,7 @@ async def on_ready():
 
             if emoji == "🔫":
                 add_user_to_db(user.id, "Valorant")
-            elif emoji == "🏔":
+            elif emoji == ":mountain_snow:":
                 add_user_to_db(user.id, "Moria")
             elif emoji == "🫡":
                 add_user_to_db(user.id, "Helldivers 2")
@@ -147,7 +147,7 @@ async def on_reaction_remove(reaction, user):
         if emoji == "🔫":
             remove_user_from_db(user.id, "Valorant")
 
-        elif emoji == "🏔":
+        elif emoji == ":mountain_snow:":
             remove_user_from_db(user.id, "Moria")
 
         elif emoji == "🫡":
