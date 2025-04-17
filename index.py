@@ -234,7 +234,7 @@ async def liste(interaction: discord.Interaction):
     game = cursor.fetchall()
     game_names = [g[0] for g in game] # Fetch all game names for the user
     if game_names:
-        message = (f"Voici les jeux auxquels tu es inscrit :" + "\n" + " ".join(game_names))
+        message = (f"Voici les jeux auxquels tu es inscrit :" + "\n" + "   ".join(game_names))
     else:
         message = "Tu n'es inscrit à aucun jeu. Pour le faire, rends-toi sur [ce message](https://discord.com/channels/1260548119926542417/1260591984985378940/1361274589992194128) et clique sur l'emoji correspondant au jeu auquel tu veux participer !"
     await interaction.response.send_message(message)
