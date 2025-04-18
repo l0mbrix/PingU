@@ -6,6 +6,7 @@ from discord import app_commands
 from discord.ext import commands
 import random
 import sqlite3
+import unicodedata
 
 # Loadings
 load_dotenv()
@@ -20,6 +21,10 @@ cursor.execute("""
         game TEXT)
 """) # Creating a table if none
 conn.commit() # Saving changes
+
+# Normalize emoji
+def normalize_emoji(emoji):
+    return ''.join(c for c in emoji if unicodedata.category(c)) # Remove all non-emoji characters
 
 # Add or check user in 'registrations' db
 def add_user_to_db(user_id, game):
@@ -99,11 +104,11 @@ async def on_ready():
             # if result is None:
                 # add_user_to_db(user.id, "Valorant")
 
-            emoji = str(reaction.emoji)
+            emoji = normalize_emoji(str(reaction.emoji))
 
             if emoji == "🔫":
                 add_user_to_db(user.id, "Valorant")
-            elif emoji == ":mountain_snow:":
+            elif emoji == "🏔":
                 add_user_to_db(user.id, "Moria")
             elif emoji == "🫡":
                 add_user_to_db(user.id, "Helldivers 2")
@@ -123,7 +128,7 @@ async def on_reaction_add(reaction, user):
             print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
             add_user_to_db(user.id, "Valorant")
 
-        elif emoji == ":mountain_snow:":
+        elif emoji == "🏔":
             print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
             add_user_to_db(user.id, "Moria")
 
@@ -147,7 +152,7 @@ async def on_reaction_remove(reaction, user):
         if emoji == "🔫":
             remove_user_from_db(user.id, "Valorant")
 
-        elif emoji == ":mountain_snow:":
+        elif emoji == "🏔":
             remove_user_from_db(user.id, "Moria")
 
         elif emoji == "🫡":
