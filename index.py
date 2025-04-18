@@ -122,7 +122,7 @@ async def on_reaction_add(reaction, user):
         return
 
     if reaction.message.id == 1361274589992194128:
-        emoji = str(reaction.emoji)
+        emoji = normalize_emoji(str(reaction.emoji))
 
         if emoji == "🔫":
             print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
@@ -147,7 +147,7 @@ async def on_reaction_remove(reaction, user):
         return
 
     if reaction.message.id == 1361274589992194128:
-        emoji = str(reaction.emoji)
+        emoji = normalize_emoji(str(reaction.emoji))
 
         if emoji == "🔫":
             remove_user_from_db(user.id, "Valorant")
