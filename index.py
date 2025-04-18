@@ -8,6 +8,15 @@ import random
 import sqlite3
 import unicodedata
 
+# Emoji to game mapping (DO NOT TOUCH, THERE IS A HIDDEN CHARACTER IN THE MOUNTAIN EMOJI!!!)
+EMOJI_TO_GAME = {
+    "🔫": "Valorant",
+    "🏔️": "Moria",  # <== Hidden character!!!
+    "🫡": "Helldivers 2",
+    "⚔️": "AoE"
+}
+
+
 # Loadings
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
@@ -21,10 +30,6 @@ cursor.execute("""
         game TEXT)
 """) # Creating a table if none
 conn.commit() # Saving changes
-
-# Normalize emoji
-def normalize_emoji(emoji):
-    return ''.join(c for c in emoji if unicodedata.category(c)) # Remove all non-emoji characters
 
 # Add or check user in 'registrations' db
 def add_user_to_db(user_id, game):
@@ -104,17 +109,22 @@ async def on_ready():
             # if result is None:
                 # add_user_to_db(user.id, "Valorant")
 
-            emoji = normalize_emoji(str(reaction.emoji))
-            print(f"Emoji reçu : {repr(emoji)} par {user.name}")
+            # emoji = normalize_emoji(str(reaction.emoji))
+            #print(f"Emoji reçu : {repr(emoji)} par {user.name}")
 
-            if emoji == "🔫":
-                add_user_to_db(user.id, "Valorant")
-            elif emoji == "🏔":
-                add_user_to_db(user.id, "Moria")
-            elif emoji == "🫡":
-                add_user_to_db(user.id, "Helldivers 2")
-            elif emoji =="⚔️":
-                add_user_to_db(user.id, "AoE")
+            #if emoji == "🔫":
+                #add_user_to_db(user.id, "Valorant")
+            #elif emoji == "🏔":
+                #add_user_to_db(user.id, "Moria")
+            #elif emoji == "🫡":
+                #add_user_to_db(user.id, "Helldivers 2")
+            #elif emoji =="⚔️":
+                #add_user_to_db(user.id, "AoE")
+            
+            game = EMOJI_TO_GAME.get(str(reaction.emoji))
+            if game:
+                add_user_to_db(user.id, game)
+
 
 # Check reactions
 @bot.event
@@ -123,23 +133,29 @@ async def on_reaction_add(reaction, user):
         return
 
     if reaction.message.id == 1361274589992194128:
-        emoji = normalize_emoji(str(reaction.emoji))
+        # emoji = normalize_emoji(str(reaction.emoji))
+        emoji = str(reaction.emoji)
+        game = EMOJI_TO_GAME.get(emoji)
+        if game:
+            print(f"{user.name} reacted with {emoji} at {reaction.message.id}")
+            add_user_to_db(user.id, game)
 
-        if emoji == "🔫":
-            print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
-            add_user_to_db(user.id, "Valorant")
 
-        elif emoji == "🏔":
-            print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
-            add_user_to_db(user.id, "Moria")
+        #if emoji == "🔫":
+            #print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
+            #add_user_to_db(user.id, "Valorant")
 
-        elif emoji == "🫡":
-            print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
-            add_user_to_db(user.id, "Helldivers 2")
+        #elif emoji == "🏔":
+            #print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
+            #add_user_to_db(user.id, "Moria")
 
-        elif emoji == "⚔️":
-            print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
-            add_user_to_db(user.id, "AoE")
+        #elif emoji == "🫡":
+            #print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
+            #add_user_to_db(user.id, "Helldivers 2")
+
+        #elif emoji == "⚔️":
+            #print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
+            #add_user_to_db(user.id, "AoE")
 
 # On reaction remove
 @bot.event
@@ -148,19 +164,24 @@ async def on_reaction_remove(reaction, user):
         return
 
     if reaction.message.id == 1361274589992194128:
-        emoji = normalize_emoji(str(reaction.emoji))
+        # emoji = normalize_emoji(str(reaction.emoji))
+        emoji = str(reaction.emoji)
+        game = EMOJI_TO_GAME.get(emoji)
+        if game:
+            remove_user_from_db(user.id, game)
 
-        if emoji == "🔫":
-            remove_user_from_db(user.id, "Valorant")
 
-        elif emoji == "🏔":
-            remove_user_from_db(user.id, "Moria")
+        #if emoji == "🔫":
+            #remove_user_from_db(user.id, "Valorant")
 
-        elif emoji == "🫡":
-            remove_user_from_db(user.id, "Helldivers 2")
+        #elif emoji == "🏔":
+            #remove_user_from_db(user.id, "Moria")
 
-        elif emoji == "⚔️":
-            remove_user_from_db(user.id, "AoE")
+        #elif emoji == "🫡":
+            #remove_user_from_db(user.id, "Helldivers 2")
+
+        #elif emoji == "⚔️":
+            #remove_user_from_db(user.id, "AoE")
 
 @bot.tree.command(name="valo", description="Ping les joueurs de Valorant 🔫")
 async def valo(interaction: discord.Interaction):
