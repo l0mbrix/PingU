@@ -123,7 +123,7 @@ async def on_reaction_add(reaction, user):
             print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
             add_user_to_db(user.id, "Valorant")
 
-        elif emoji == "🏔":
+        elif emoji == ":mountain_snow:":
             print(f"{user.name} reacted with {emoji} at {reaction.message.id}") # Console check
             add_user_to_db(user.id, "Moria")
 
