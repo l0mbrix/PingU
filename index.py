@@ -105,6 +105,7 @@ async def on_ready():
                 # add_user_to_db(user.id, "Valorant")
 
             emoji = normalize_emoji(str(reaction.emoji))
+            print(f"Emoji reçu : {repr(emoji)} par {user.name}")
 
             if emoji == "🔫":
                 add_user_to_db(user.id, "Valorant")
